@@ -3,8 +3,6 @@ kind: Application
 metadata:
   name: uptime-kuma
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
   sources:
