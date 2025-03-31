@@ -15,11 +15,14 @@ spec:
         values: |
           ingress:
             enabled: true
-          hosts:
-            - host: kuma.admondtamang.com.np
-              paths:
-                - path: /
-                  pathType: ImplementationSpecific
+            hosts:
+              - host: kuma.admondtamang.com.np
+                paths:
+                  - path: /
+                    pathType: ImplementationSpecific
+            annotations:
+              nginx.ingress.kubernetes.io/rewrite-target: /
+              nginx.ingress.kubernetes.io/ssl-redirect: "false"
 
   destination:
     namespace: default
