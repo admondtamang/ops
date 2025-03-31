@@ -10,7 +10,7 @@ spec:
   sources:
     - chart: uptime-kuma
       path: uptime-kuma
-      repoURL: "registry-1.docker.io/louislam/uptime-kuma"
+      repoURL: "registry-1.docker.io/louislam"
       targetRevision: 19.x.x
       helm:
         values: |
