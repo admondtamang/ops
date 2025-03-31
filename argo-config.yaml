@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/admondtamang/dotfiles.git
+    repoURL: https://github.com/admondtamang/ops.git
     targetRevision: HEAD
-    path: ops/kubernetes/argocd/apps
+    path: apps
   destination:
     server: https://kubernetes.default.svc
     namespace: sourceoftruth
