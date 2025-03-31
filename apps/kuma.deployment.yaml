@@ -15,7 +15,11 @@ spec:
         values: |
           ingress:
             enabled: true
-            hostname: kuma.admondtamang.com.np
+          hosts:
+            - host: kuma.admondtamang.com.np
+              paths:
+                - path: /
+                  pathType: ImplementationSpecific
 
   destination:
     namespace: default
