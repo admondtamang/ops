@@ -9,8 +9,7 @@ spec:
   project: default
   sources:
     - chart: uptime-kuma
-      path: uptime-kuma
-      repoURL: "registry-1.docker.io/louislam"
+      repoURL: "https://dirsigler.github.io/uptime-kuma-helm/"
       targetRevision: 2.x.x
       helm:
         values: |
