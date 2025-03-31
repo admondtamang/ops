@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-helm
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  sources:
+    - chart: nginx
+      path: nginx
+      repoURL: "registry-1.docker.io/bitnamicharts"
+      targetRevision: 19.x.x
+      helm:
+        values: |
+          ingress:
+            enabled: true
+            hostname: nginx.admondtamang.com.np
+
+  destination:
+    namespace: default
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
