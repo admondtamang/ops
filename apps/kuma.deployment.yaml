@@ -11,7 +11,7 @@ spec:
     - chart: uptime-kuma
       path: uptime-kuma
       repoURL: "registry-1.docker.io/louislam"
-      targetRevision: 19.x.x
+      targetRevision: 2.x.x
       helm:
         values: |
           ingress:
