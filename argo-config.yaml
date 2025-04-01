@@ -19,3 +19,22 @@ spec:
     automated:
       selfHeal: true
       prune: true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minimal-ingress
+  namespace: argocd
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: argo.admondtamang.com.np
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80
