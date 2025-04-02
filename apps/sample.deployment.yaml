@@ -51,7 +51,7 @@ spec:
   tls:
     - hosts:
         - argo.admondtamang.com.np
-      secretName: argo-tls
+      secretName: nginx-deployment-tls
   rules:
     - host: sub.admondtamang.com.np
       http:
