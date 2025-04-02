@@ -3,6 +3,6 @@
 Applications:
 
 - argocd
-- nginx server
+- nginx server using deployments
 - nginx using helm
 - uptime kuma
