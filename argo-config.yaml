@@ -23,10 +23,16 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minimal-ingress
+  name: argocd-ingress
   namespace: argocd
+  annotations:
+    cert-manager.io/issuer: "letsencrypt-prod"
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - argo.admondtamang.com.np
+      secretName: argo-tls
   rules:
     - host: argo.admondtamang.com.np
       http:
