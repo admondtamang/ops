@@ -3,4 +3,5 @@ kind: Kustomization
 
 resources:
   - "https://github.com/cert-manager/cert-manager/releases/download/v1.17.0/cert-manager.yaml"
-  - cert-issuer.yaml
+  - cert-issuer-staging.yaml
+  - cert-issuer-production.yaml
