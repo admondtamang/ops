@@ -11,6 +11,7 @@ spec:
       targetRevision: 2.x.x
       helm:
         values: |
+          namespaceOverride: argocd
           ingress:
             enabled: true
             annotations:
