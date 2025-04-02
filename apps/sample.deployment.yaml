@@ -50,7 +50,7 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - argo.admondtamang.com.np
+        - sub.admondtamang.com.np
       secretName: nginx-deployment-tls
   rules:
     - host: sub.admondtamang.com.np
