@@ -13,6 +13,12 @@ spec:
         values: |
           ingress:
             enabled: true
+            annotations:
+              cert-manager.io/issuer: "letsencrypt-prod"
+            tls:
+              - secretName: kuma-tls
+                hosts:
+                  - kuma.admondtamang.com.np
             hosts:
               - host: kuma.admondtamang.com.np
                 paths:
