@@ -15,6 +15,7 @@ spec:
             enabled: true
             annotations:
               cert-manager.io/issuer: "letsencrypt-prod"
+              kubernetes.io/ingress.class: "traefik"
             tls:
               - secretName: kuma-tls
                 hosts:
