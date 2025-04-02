@@ -14,7 +14,7 @@ spec:
           ingress:
             enabled: true
             annotations:
-              cert-manager.io/issuer: "letsencrypt-prod"
+              cert-manager.io/issuer: "letsencrypt-staging"
               kubernetes.io/ingress.class: "traefik"
             tls:
               - secretName: kuma-tls
