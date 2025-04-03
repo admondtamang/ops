@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: nginx-helm
-  namespace: argocd
+  namespace: apps
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
@@ -23,7 +23,7 @@ spec:
               cert-manager.io/cluster-issuer: letsencrypt-staging
 
   destination:
-    namespace: argocd
+    namespace: apps
     name: in-cluster
   syncPolicy:
     automated:
