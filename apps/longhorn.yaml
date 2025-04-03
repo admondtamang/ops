@@ -19,7 +19,7 @@ spec:
               cert-manager.io/cluster-issuer: "letsencrypt-prod"
             enabled: false
             ingressClassName: traefik
-            host: sslip.io
+            host: longhorn.admondtamang.com.np
             tls: false
             tlsSecret: longhorn.local-tls
             path: /
