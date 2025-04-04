@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: n8n
+  namespace: default
+spec:
+  project: default
+  sources:
+    - chart: n8n
+      path: n8n
+      repoURL: "https://8gears.container-registry.com/library/"
+      targetRevision: 1.x.x
+      helm:
+        values: |
+          ingress:
+            enabled: false
+            annotations:
+              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+            hosts:
+              - host: n8n.admondtamang.com.np
+                paths: []
+            tls:
+              - hosts:
+                  - n8n.admondtamang.com.np
+                secretName: n8n-tls
+
+  destination:
+    namespace: default
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
