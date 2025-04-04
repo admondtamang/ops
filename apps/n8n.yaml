@@ -7,22 +7,22 @@ spec:
   project: default
   sources:
     - chart: n8n
-    repoURL: https://8gears.container-registry.com/chartrepo/library
-    targetRevision: 1.0.6
-      helm:
-        values: |
-          ingress:
-            enabled: true
-            annotations:
-              cert-manager.io/cluster-issuer: "letsencrypt-prod"
-              kubernetes.io/ingress.class: "traefik"
-            hosts:
-              - host: n8n.admondtamang.com.np
-                paths: []
-            tls:
-              - hosts:
-                  - n8n.admondtamang.com.np
-                secretName: n8n-tls
+      repoURL: https://8gears.container-registry.com/chartrepo/library
+      targetRevision: 1.0.6
+        helm:
+          values: |
+            ingress:
+              enabled: true
+              annotations:
+                cert-manager.io/cluster-issuer: "letsencrypt-prod"
+                kubernetes.io/ingress.class: "traefik"
+              hosts:
+                - host: n8n.admondtamang.com.np
+                  paths: []
+              tls:
+                - hosts:
+                    - n8n.admondtamang.com.np
+                  secretName: n8n-tls
 
   destination:
     namespace: default
