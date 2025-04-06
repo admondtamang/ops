@@ -13,6 +13,14 @@ spec:
         values: |
           injector:
             enabled: false
+          ui:
+            enabled: true
+          ha:
+            enabled: true
+            replicas: 3
+            raft:
+              enabled: true
+              setNodeId: true
           server:
             ingress:
               enabled: true
