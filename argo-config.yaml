@@ -6,19 +6,20 @@ metadata:
 spec:
   project: default
   source:
+    directory:
+      jsonnet: {}
+      recurse: true
+    path: apps
     repoURL: https://github.com/admondtamang/ops.git
     targetRevision: HEAD
-    path: apps
   destination:
     server: https://kubernetes.default.svc
-    namespace: sourceoftruth
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
-
     automated:
-      selfHeal: true
       prune: true
+      selfHeal: true
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

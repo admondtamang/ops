@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vault
+  namespace: default
+spec:
+  project: default
+  sources:
+    - chart: vault
+      repoURL: "https://helm.releases.hashicorp.com"
+      targetRevision: 0.30.0
+      helm:
+        values: |
+          injector:
+            enabled: false
+          server:
+            ingress:
+              enabled: true
+              annotations:
+                cert-manager.io/cluster-issuer: "letsencrypt-prod"
+                kubernetes.io/ingress.class: "traefik"
+              pathType: Prefix
+              activeService: true
+              hosts:
+                - host: vault.admondtamang.com.np
+              tls: 
+                - secretName: vault-tls
+                  hosts:
+                    - vault.admondtamang.com.np
+          # ingress:
+          #   enabled: true
+          #   annotations:
+          #     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+          #     kubernetes.io/ingress.class: "traefik"
+          #   tls:
+          #     - secretName: kuma-tls
+          #       hosts:
+          #         - kuma.admondtamang.com.np
+          #   hosts:
+          #     - host: kuma.admondtamang.com.np
+          #       paths:
+          #         - path: /
+          #           pathType: ImplementationSpecific
+
+  destination:
+    namespace: default
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

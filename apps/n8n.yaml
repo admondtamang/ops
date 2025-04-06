@@ -18,7 +18,7 @@ spec:
               kubernetes.io/ingress.class: "traefik"
             hosts:
               - host: n8n.admondtamang.com.np
-                paths: []
+                paths: /
             tls:
               - hosts:
                   - n8n.admondtamang.com.np
