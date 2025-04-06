@@ -14,7 +14,7 @@ spec:
           ingress:
             enabled: true
             annotations:
-              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+              cert-manager.io/cluster-issuer: "letsencrypt-staging"
               kubernetes.io/ingress.class: "traefik"
             tls:
               - secretName: kuma-tls
@@ -26,7 +26,7 @@ spec:
                   - path: /
                     pathType: ImplementationSpecific
   destination:
-    namespace: kuma
+    namespace: default
     name: in-cluster
   syncPolicy:
     automated:
