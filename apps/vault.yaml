@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: vault
-  namespace: default
+  namespace: argocd
 spec:
   project: default
   sources:
@@ -51,7 +51,7 @@ spec:
           #           pathType: ImplementationSpecific
 
   destination:
-    namespace: default
+    namespace: vault
     name: in-cluster
   syncPolicy:
     automated:
