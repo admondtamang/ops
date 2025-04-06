@@ -26,7 +26,7 @@ spec:
                   - path: /
                     pathType: ImplementationSpecific
   destination:
-    namespace: default
+    namespace: cert-manager
     name: in-cluster
   syncPolicy:
     automated:
