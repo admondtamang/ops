@@ -22,7 +22,7 @@ spec:
               kubernetes.io/ingress.class: traefik
               cert-manager.io/cluster-issuer: letsencrypt-prod
   destination:
-    namespace: argocd
+    namespace: default
     name: in-cluster
   syncPolicy:
     automated:

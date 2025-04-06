@@ -35,23 +35,8 @@ spec:
                 - secretName: vault-tls
                   hosts:
                     - vault.admondtamang.com.np
-          # ingress:
-          #   enabled: true
-          #   annotations:
-          #     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-          #     kubernetes.io/ingress.class: "traefik"
-          #   tls:
-          #     - secretName: kuma-tls
-          #       hosts:
-          #         - kuma.admondtamang.com.np
-          #   hosts:
-          #     - host: kuma.admondtamang.com.np
-          #       paths:
-          #         - path: /
-          #           pathType: ImplementationSpecific
-
   destination:
-    namespace: vault
+    namespace: default
     name: in-cluster
   syncPolicy:
     automated:
