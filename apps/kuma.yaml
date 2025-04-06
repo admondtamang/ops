@@ -25,9 +25,8 @@ spec:
                 paths:
                   - path: /
                     pathType: ImplementationSpecific
-
   destination:
-    namespace: default
+    namespace: kuma
     name: in-cluster
   syncPolicy:
     automated:
