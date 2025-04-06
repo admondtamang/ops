@@ -20,8 +20,7 @@ spec:
             tls: true
             annotations: 
               kubernetes.io/ingress.class: traefik
-              cert-manager.io/cluster-issuer: letsencrypt-staging
-
+              cert-manager.io/cluster-issuer: letsencrypt-prod
   destination:
     namespace: argocd
     name: in-cluster
