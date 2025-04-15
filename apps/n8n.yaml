@@ -7,8 +7,9 @@ spec:
   project: default
   sources:
     - chart: n8n
-      repoURL: https://8gears.container-registry.com/chartrepo/library
-      targetRevision: 1.0.6
+      repoURL: 8gears.container-registry.com/library
+      path: n8n
+      targetRevision: 1.0.0
       helm:
         values: |
           ingress:

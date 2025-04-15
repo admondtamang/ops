@@ -1,22 +1,30 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: redis
+  name: mysql
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
   sources:
-    - chart: redis
-      path: redis
+    - chart: mysql
+      path: mysql
       repoURL: "registry-1.docker.io/bitnamicharts"
+      targetRevision: 12.3.3
       helm:
         values: |
-          architecture: standalone
-          auth: 
+          networkPolicy:
             enabled: true
-            password: Password@123
+            allowExternal: true
+          architecture: standalone
+          auth:
+            rootPassword: "demo"
+            createDatabase: true
+            database: "demo"
+            username: "demo"
+            password: "demo"
+
   destination:
     namespace: default
     name: in-cluster
