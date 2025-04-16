@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rabbitmq
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  sources:
+    - chart: rabbitmq
+      path: rabbitmq
+      targetRevision: 15.5.3
+      repoURL: "registry-1.docker.io/bitnamicharts"
+      helm:
+        values: |
+          ingress:
+            enabled: false
+            path: /
+            pathType: ImplementationSpecific
+            hostname: rabbitmq.admondtamang.com.np
+            annotations: 
+              kubernetes.io/ingress.class: traefik
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+            tls: true
+          auth:
+            username: user
+            password: "user"
+
+  destination:
+    namespace: default
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
