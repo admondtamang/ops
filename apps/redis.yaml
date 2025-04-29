@@ -11,14 +11,21 @@ spec:
   project: default
   sources:
     - chart: redis
-      path: redis
       repoURL: "registry-1.docker.io/bitnamicharts"
+      targetRevision: "17.x.x"
       helm:
         values: |
           architecture: standalone
-          auth: 
+          auth:
             enabled: true
             password: Password@123
+          master:
+            service:
+              type: ClusterIP
+              ports:
+                redis: 6379
+          replica:
+            replicaCount: 0
   destination:
     namespace: default
     name: in-cluster

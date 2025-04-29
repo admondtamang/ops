@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-values
+  namespace: argocd
+data:
+  values.yaml: |
+    # ArgoCD configuration values
+    argo:
+      server:
+        ingress:
+          enabled: true
+          ingressClassName: traefik
+          hosts:
+            - argo.admondtamang.com.np
+          tls:
+            - secretName: argo-tls
+              hosts:
+                - argo.admondtamang.com.np
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-prod

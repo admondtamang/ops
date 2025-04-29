@@ -25,7 +25,7 @@ spec:
                 secretName: n8n-tls
 
   destination:
-    namespace: argocd
+    namespace: default
     name: in-cluster
   syncPolicy:
     automated:
