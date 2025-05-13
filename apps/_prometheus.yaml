@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - chart: prometheus
+      repoURL: https://prometheus-community.github.io/helm-charts
+      targetRevision: 27.13.0
+      helm:
+        values: |
+          ingress:
+            annotations: 
+              kubernetes.io/ingress.class: traefik  
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+            enabled: true
+            hosts:
+              - prometheus.admondtamang.com.np
+            tls:
+              - hosts:
+                  - prometheus.admondtamang.com.np
+                secretName: prometheus-tls
+
+  destination:
+    namespace: default
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
