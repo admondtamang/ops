@@ -10,7 +10,7 @@ spec:
       jsonnet: {}
       recurse: true
     path: apps
-    repoURL: https://github.com/admondtamang/ops.git
+    repoURL: https://github.com/admond-one/ops.git
     targetRevision: HEAD
   destination:
     server: https://kubernetes.default.svc
