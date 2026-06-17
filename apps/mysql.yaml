@@ -28,7 +28,7 @@ spec:
             password: "demo"
 
   destination:
-    namespace: default
+    namespace: database
     name: in-cluster
   syncPolicy:
     automated:

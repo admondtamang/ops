@@ -3,8 +3,6 @@ kind: Application
 metadata:
   name: uptime-kuma
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   sources:
@@ -13,6 +11,10 @@ spec:
       targetRevision: 2.x.x
       helm:
         values: |
+          service:
+            type: LoadBalancer
+            port: 9991
+            targetPort: 3001
           ingress:
             enabled: true
             annotations:
@@ -28,7 +30,7 @@ spec:
                   - path: /
                     pathType: ImplementationSpecific
   destination:
-    namespace: cert-manager
+    namespace: monitoring
     name: in-cluster
   syncPolicy:
     automated:

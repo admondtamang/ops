@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nats
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - chart: nats
+      repoURL: https://nats-io.github.io/k8s/helm/charts/
+      targetRevision: 2.14.2
+      helm:
+        values: |
+          config:
+            monitor:
+              enabled: true
+            websocket:
+              enabled: true
+              ingress:
+                enabled: true
+                hosts:
+                  - nats.admondtamang.com.np
+                className: traefik
+                tlsSecretName: nats-tls
+                merge:
+                  metadata:
+                    annotations:
+                      cert-manager.io/cluster-issuer: letsencrypt-prod
+
+  destination:
+    namespace: default
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
