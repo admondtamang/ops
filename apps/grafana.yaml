@@ -13,6 +13,10 @@ spec:
       targetRevision: 9.0.0
       helm:
         values: |
+          service:
+            type: LoadBalancer
+            port: 9995
+            targetPort: 3000
           ingress:
             annotations: 
               kubernetes.io/ingress.class: traefik
@@ -26,7 +30,7 @@ spec:
                 secretName: grafana-tls
 
   destination:
-    namespace: default
+    namespace: monitoring
     name: in-cluster
   syncPolicy:
     automated:
