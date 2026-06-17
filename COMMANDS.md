@@ -61,58 +61,6 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
 
 By default, ArgoCD reads from GitHub. If you edit a YAML locally and want to test it immediately — without committing or pushing — use the ArgoCD CLI's `--local` flag. ArgoCD renders your local files and applies them directly to the cluster. It treats it as a legitimate sync, so `selfHeal` won't fight you and revert the change.
 
-### Step 1 — Install the ArgoCD CLI
-
-```bash
-# Linux (replace VERSION with latest from https://github.com/argoproj/argo-cd/releases)
-VERSION=v2.14.0
-curl -sSL -o /usr/local/bin/argocd \
-  https://github.com/argoproj/argo-cd/releases/download/${VERSION}/argocd-linux-amd64
-chmod +x /usr/local/bin/argocd
-```
-
-Verify it works:
-```bash
-argocd version --client
-```
-
-### Step 2 — Log in to your ArgoCD server
-
-#### Option A — Core mode (recommended for local machine)
-
-`--core` mode bypasses the ArgoCD server entirely and talks directly to Kubernetes using your existing kubeconfig. No port-forward, no password, no TLS issues.
-
-```bash
-argocd login --core
-```
-
-As long as `kubectl` works, this works.
-
-#### Option B — Hosted / domain accessible
-
-If ArgoCD is reachable via its ingress domain (DNS resolves and TLS cert is issued):
-
-```bash
-argocd login argo.admondtamang.com.np \
-  --username admin \
-  --password <your-password>
-```
-
-Get the password with:
-```bash
-kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath="{.data.password}" | base64 -d && echo
-```
-
-> **Tip:** Add `--insecure` if you get a TLS error (e.g. cert is still being issued by Let's Encrypt):
-> ```bash
-> argocd login argo.admondtamang.com.np --username admin --password <password> --insecure
-> ```
-
-### Step 3 — Apply local changes without pushing to GitHub
-
-> **Note:** `argocd app sync --local` does NOT work with multi-source apps (apps that use `sources:` plural in their YAML — which is all apps in this repo). Use the workflow below instead.
-
 **Step 1 — Disable selfHeal on the app you're testing:**
 ```bash
 kubectl patch application <app-name> -n argocd --type=merge \
