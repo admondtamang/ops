@@ -4,8 +4,8 @@ server:
     - --insecure # Disable TLS verification (for development)
   service:
     type: LoadBalancer
-    servicePortHttp: 9999 # remove these for prod.
-    servicePortHttps: 443  # remove these for prod.
+    servicePortHttp: 9999
+    servicePortHttps: 9998
   ingress:
     enabled: false
 
