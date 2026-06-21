@@ -20,6 +20,11 @@ spec:
           config:
             monitor:
               enabled: true
+            jetstream:
+              enabled: true
+              fileStore:
+                pvc:
+                  storageClassName: local-path
             websocket:
               enabled: true
               ingress:
@@ -32,6 +37,18 @@ spec:
                   metadata:
                     annotations:
                       cert-manager.io/cluster-issuer: letsencrypt-prod
+            merge:
+              authorization:
+                user: nats
+                password: "nats_password"
+                timeout: 2
+          container:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
 
   destination:
     namespace: default
