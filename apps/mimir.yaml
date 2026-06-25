@@ -1,0 +1,113 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mimir
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - chart: mimir-distributed
+      repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 5.6.0
+      helm:
+        values: |
+          # ── HOMELAB OVERRIDES ─────────────────────────────────────────────
+          # The mimir-distributed chart defaults target large multi-zone clusters.
+          # These overrides cut it down to a single-node homelab footprint.
+
+          # 1. Disable Kafka (new ingest-storage arch, costs 1 CPU + 1Gi RAM alone)
+          #    We use the classic push path instead.
+          kafka:
+            enabled: false
+
+          # 2. Disable the rollout operator — it only manages rolling zone upgrades.
+          #    Useless (and wasteful) on a single node.
+          rollout_operator:
+            enabled: false
+
+          # 3. Single ingester, no zone-aware replication.
+          #    Defaults spin up 3 ingesters (one per zone). We have one node.
+          ingester:
+            replicas: 1
+            zoneAwareReplication:
+              enabled: false
+
+          # 4. Single store-gateway, no zone-aware replication.
+          #    Same reason as ingester above.
+          store_gateway:
+            replicas: 1
+            zoneAwareReplication:
+              enabled: false
+
+          # 5. Reduce querier and query-scheduler replicas.
+          querier:
+            replicas: 1
+          query_scheduler:
+            replicas: 1
+
+          # 6. Disable all Memcached caches (chunks, index, metadata, results).
+          #    Caches are a performance optimization for high-QPS clusters.
+          #    Enabling them here would add 4 extra pods for negligible gain.
+          chunks-cache:
+            enabled: false
+          index-cache:
+            enabled: false
+          metadata-cache:
+            enabled: false
+          results-cache:
+            enabled: false
+
+          # 7. Keep Minio enabled — it's the local S3-compatible object store.
+          #    Mimir writes metric blocks here. Increase size from default 5Gi.
+          minio:
+            enabled: true
+            persistence:
+              size: 10Gi
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+
+          # 8. Override Mimir's own config to disable ingest storage.
+          #    Even when kafka.enabled=false, the config template still has
+          #    ingest_storage.enabled: true — Mimir crashes without a Kafka address.
+          #    structuredConfig is merged ON TOP of the rendered config template,
+          #    letting us override specific keys without rewriting the whole config.
+          mimir:
+            structuredConfig:
+              ingest_storage:
+                enabled: false
+              ingester:
+                # Classic push path: distributors write directly to ingesters via gRPC.
+                # The default disables this because Kafka handles writes in ingest-storage mode.
+                push_grpc_method_enabled: true
+
+          # 9. Expose Mimir through the gateway's ingress (nginx reverse proxy pod).
+          #    mimir-distributed does NOT have a top-level ingress block.
+          #    All traffic (write, read, alertmanager) goes through the gateway.
+          gateway:
+            ingress:
+              enabled: true
+              ingressClassName: traefik
+              annotations:
+                cert-manager.io/cluster-issuer: letsencrypt-prod
+              hosts:
+                - host: mimir.admondtamang.com.np
+                  paths:
+                    - path: /
+              tls:
+                - secretName: mimir-tls
+                  hosts:
+                    - mimir.admondtamang.com.np
+
+  destination:
+    namespace: monitoring
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

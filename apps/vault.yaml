@@ -17,24 +17,26 @@ spec:
             enabled: false
           ui:
             enabled: true
-          standalone:
-            enabled: true
           server:
-            ingress:
+            ha:
               enabled: true
-              annotations:
-                cert-manager.io/cluster-issuer: "letsencrypt-prod"
-                kubernetes.io/ingress.class: "traefik"
-              pathType: Prefix
-              activeService: true
-              hosts:
-                - host: vault.admondtamang.com.np
-              tls: 
-                - secretName: vault-tls
-                  hosts:
-                    - vault.admondtamang.com.np
+              replicas: 1
+              raft:
+                enabled: true
+                setNodeId: true
+            dataStorage:
+              enabled: true
+              size: 10Gi
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "250m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+
   destination:
-    namespace: default
+    namespace: vault
     name: in-cluster
   syncPolicy:
     automated:
