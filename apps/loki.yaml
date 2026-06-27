@@ -1,0 +1,100 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - chart: loki
+      repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 6.30.0
+      helm:
+        values: |
+          # Single-binary mode: one pod runs all Loki components.
+          # Equivalent to running `loki -target=all` — simple, no service mesh needed.
+          deploymentMode: SingleBinary
+
+          loki:
+            commonConfig:
+              replication_factor: 1
+            auth_enabled: false  # no multi-tenancy — single homelab cluster
+
+            # Filesystem storage: logs written to a PVC on the node.
+            # No S3/Minio dependency, simplest possible setup.
+            storage:
+              type: filesystem
+
+            # 30-day log retention
+            limits_config:
+              retention_period: 720h
+
+            # Enable the compactor to enforce retention
+            compactor:
+              working_directory: /var/loki/compactor
+              retention_enabled: true
+
+          # Single replica — we have one node
+          singleBinary:
+            replicas: 1
+            persistence:
+              enabled: true
+              size: 10Gi
+
+          # Disable the read/write/backend split components (microservices mode)
+          read:
+            replicas: 0
+          write:
+            replicas: 0
+          backend:
+            replicas: 0
+
+          # Disable bundled Grafana + Prometheus (we have our own)
+          grafana:
+            enabled: false
+          prometheus:
+            enabled: false
+
+          # Disable Minio (using filesystem storage instead)
+          minio:
+            enabled: false
+
+          # Disable self-monitoring (adds extra pods, not needed yet)
+          selfMonitoring:
+            enabled: false
+            grafanaAgent:
+              installOperator: false
+
+          # Disable test pod
+          test:
+            enabled: false
+
+          # Loki gateway (nginx) — expose via ingress for external access
+          gateway:
+            enabled: true
+            ingress:
+              enabled: true
+              ingressClassName: traefik
+              annotations:
+                cert-manager.io/cluster-issuer: letsencrypt-prod
+              hosts:
+                - host: loki.admondtamang.com.np
+                  paths:
+                    - path: /
+                      pathType: Prefix
+              tls:
+                - secretName: loki-tls
+                  hosts:
+                    - loki.admondtamang.com.np
+
+  destination:
+    namespace: monitoring
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

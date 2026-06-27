@@ -9,7 +9,7 @@
 | **L** | Loki | Log aggregation (collect all pod logs) | [ ] Not started |
 | **G** | Grafana | Dashboards and UI (already deployed) | [x] Done — `grafana.admondtamang.com.np` |
 | **T** | Tempo | Distributed tracing (track requests across services) | [ ] Not started |
-| **M** | Mimir | Long-term metrics storage (Prometheus-compatible) | [ ] Not started |
+| **M** | Mimir | Long-term metrics storage (Prometheus-compatible) | [x] Done — `mimir.admondtamang.com.np` |
 | — | Alloy | Unified agent: ships logs + metrics + traces | [ ] Not started |
 
 ## Data Flow
