@@ -1,0 +1,162 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - chart: alloy
+      repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 0.12.5
+      helm:
+        values: |
+          alloy:
+            configMap:
+              content: |
+                // ── LOGS → LOKI ──────────────────────────────────────────────
+                // Discover all pods running on this node
+                discovery.kubernetes "pods" {
+                  role = "pod"
+                }
+
+                // Relabel: map k8s metadata to Loki labels
+                // Labels are the index — keep them low-cardinality (no pod IDs, no UUIDs)
+                discovery.relabel "pod_logs" {
+                  targets = discovery.kubernetes.pods.targets
+
+                  rule {
+                    source_labels = ["__meta_kubernetes_namespace"]
+                    target_label  = "namespace"
+                  }
+                  rule {
+                    source_labels = ["__meta_kubernetes_pod_name"]
+                    target_label  = "pod"
+                  }
+                  rule {
+                    source_labels = ["__meta_kubernetes_pod_container_name"]
+                    target_label  = "container"
+                  }
+                  rule {
+                    source_labels = ["__meta_kubernetes_pod_label_app"]
+                    target_label  = "app"
+                  }
+                }
+
+                // Tail logs from the node filesystem, attach labels from above
+                loki.source.kubernetes "pods" {
+                  targets    = discovery.relabel.pod_logs.output
+                  forward_to = [loki.write.default.receiver]
+                }
+
+                // Ship logs to Loki gateway (internal cluster URL)
+                loki.write "default" {
+                  endpoint {
+                    url = "http://loki-gateway.monitoring.svc/loki/api/v1/push"
+                  }
+                }
+
+                // ── METRICS → MIMIR ──────────────────────────────────────────
+                // Scrape all pods that have prometheus.io/scrape=true annotation
+                prometheus.scrape "pods" {
+                  targets    = discovery.kubernetes.pods.targets
+                  forward_to = [prometheus.remote_write.mimir.receiver]
+
+                  rule {
+                    source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+                    action        = "keep"
+                    regex         = "true"
+                  }
+                  rule {
+                    source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+                    target_label  = "__metrics_path__"
+                    regex         = "(.+)"
+                  }
+                  rule {
+                    source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_port"]
+                    target_label  = "__address__"
+                    regex         = "(.+)"
+                    replacement   = "${__meta_kubernetes_pod_ip}:${1}"
+                  }
+                }
+
+                // Also scrape kubernetes system components
+                prometheus.scrape "kubelet" {
+                  targets = [{
+                    __address__ = "192.168.1.64:10250",
+                  }]
+                  scheme             = "https"
+                  tls_config {
+                    insecure_skip_verify = true
+                  }
+                  bearer_token_file  = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+                  forward_to         = [prometheus.remote_write.mimir.receiver]
+                }
+
+                // Ship metrics to Mimir gateway (internal cluster URL)
+                prometheus.remote_write "mimir" {
+                  endpoint {
+                    url = "http://mimir-nginx.monitoring.svc/api/v1/push"
+                  }
+                }
+
+                // ── TRACES → TEMPO ────────────────────────────────────────────
+                // Receive OTLP traces from apps (they push to Alloy, Alloy forwards)
+                otelcol.receiver.otlp "default" {
+                  grpc { endpoint = "0.0.0.0:4317" }
+                  http { endpoint = "0.0.0.0:4318" }
+
+                  output {
+                    traces = [otelcol.exporter.otlp.tempo.input]
+                  }
+                }
+
+                // Forward traces to Tempo
+                otelcol.exporter.otlp "tempo" {
+                  client {
+                    endpoint = "tempo.monitoring.svc:4317"
+                    tls {
+                      insecure = true
+                    }
+                  }
+                }
+
+          # DaemonSet: one Alloy pod per node (reads logs from node filesystem)
+          controller:
+            type: daemonset
+
+          # Alloy needs to read /var/log/pods from the host node
+          extraVolumes:
+            - name: varlog
+              hostPath:
+                path: /var/log
+            - name: varlibdockercontainers
+              hostPath:
+                path: /var/lib/docker/containers
+
+          extraVolumeMounts:
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+
+          # Alloy needs cluster-wide read access to discover pods + scrape metrics
+          rbac:
+            create: true
+
+          serviceAccount:
+            create: true
+
+  destination:
+    namespace: monitoring
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
