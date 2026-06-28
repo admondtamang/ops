@@ -1,0 +1,72 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tempo
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - chart: tempo
+      repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 1.23.0
+      helm:
+        values: |
+          # Single-binary Tempo — one pod, filesystem backend
+          tempo:
+            storage:
+              trace:
+                backend: local
+                local:
+                  path: /var/tempo/traces
+                wal:
+                  path: /var/tempo/wal
+
+            # Accept traces in all common formats so any app can send without reconfiguring
+            receivers:
+              otlp:          # OpenTelemetry (modern standard)
+                protocols:
+                  grpc:
+                    endpoint: 0.0.0.0:4317
+                  http:
+                    endpoint: 0.0.0.0:4318
+              jaeger:        # legacy Jaeger format
+                protocols:
+                  thrift_http:
+                    endpoint: 0.0.0.0:14268
+
+            # 72-hour trace retention (traces are large, keep window short)
+            retention: 72h
+
+          persistence:
+            enabled: true
+            size: 10Gi
+
+          # Disable bundled extras — we have our own Grafana + Prometheus
+          serviceMonitor:
+            enabled: false
+
+          ingress:
+            enabled: true
+            ingressClassName: traefik
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+            hosts:
+              - host: tempo.admondtamang.com.np
+                paths:
+                  - path: /
+            tls:
+              - secretName: tempo-tls
+                hosts:
+                  - tempo.admondtamang.com.np
+
+  destination:
+    namespace: monitoring
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
