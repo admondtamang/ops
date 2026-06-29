@@ -15,7 +15,7 @@ spec:
         values: |
           service:
             type: LoadBalancer
-            port: 9222
+            port: 4222
             targetPort: 4222
           config:
             monitor:
