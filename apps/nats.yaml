@@ -40,7 +40,7 @@ spec:
             merge:
               authorization:
                 user: nats
-                password: "nats_password"
+                password: nats_password
                 timeout: 2
           container:
             requests:
