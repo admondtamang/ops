@@ -14,10 +14,9 @@ spec:
       helm:
         values: |
           service:
-            type: NodePort
+            type: LoadBalancer
             port: 4222
             targetPort: 4222
-            nodePort: 30422
           config:
             monitor:
               enabled: true

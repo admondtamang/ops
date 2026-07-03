@@ -59,10 +59,9 @@ spec:
                 }
 
                 // ── METRICS → MIMIR ──────────────────────────────────────────
-                // Scrape all pods that have prometheus.io/scrape=true annotation
-                prometheus.scrape "pods" {
-                  targets    = discovery.kubernetes.pods.targets
-                  forward_to = [prometheus.remote_write.mimir.receiver]
+                // Filter + relabel pods with prometheus.io/scrape=true
+                discovery.relabel "scraped_pods" {
+                  targets = discovery.kubernetes.pods.targets
 
                   rule {
                     source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
@@ -80,6 +79,11 @@ spec:
                     regex         = "(.+)"
                     replacement   = "${__meta_kubernetes_pod_ip}:${1}"
                   }
+                }
+
+                prometheus.scrape "pods" {
+                  targets    = discovery.relabel.scraped_pods.output
+                  forward_to = [prometheus.remote_write.mimir.receiver]
                 }
 
                 // Also scrape kubernetes system components
