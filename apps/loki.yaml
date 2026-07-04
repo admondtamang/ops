@@ -45,6 +45,7 @@ spec:
             compactor:
               working_directory: /var/loki/compactor
               retention_enabled: true
+              delete_request_store: filesystem
 
           # Single replica — we have one node
           singleBinary:
