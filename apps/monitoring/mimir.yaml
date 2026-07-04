@@ -1,3 +1,7 @@
+# Mimir — long-term metrics storage (Prometheus-compatible)
+# Receives metrics pushed by Alloy via remote_write → stores in Minio (S3-compatible)
+# Queried by Grafana using the Prometheus query API
+# mimir-nginx is the internal entry point: mimir-nginx.monitoring.svc
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

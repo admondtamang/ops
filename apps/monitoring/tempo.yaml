@@ -1,3 +1,7 @@
+# Tempo — distributed tracing backend
+# Receives OTLP traces forwarded by Alloy → stores on node disk
+# Queried by Grafana to visualise request traces and drill into spans
+# Internal entry point: tempo.monitoring.svc:4317 (gRPC) / :3100 (HTTP)
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

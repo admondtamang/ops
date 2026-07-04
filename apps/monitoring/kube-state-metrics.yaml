@@ -1,3 +1,7 @@
+# kube-state-metrics — Kubernetes object metrics collector
+# Reads the k8s API → exposes pod status, deployment replicas, resource limits/requests
+# Alloy scrapes it via prometheus.io/scrape annotation → ships to Mimir
+# Required for Kubernetes cluster dashboards in Grafana
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

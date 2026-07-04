@@ -1,3 +1,7 @@
+# Alloy — telemetry collector (runs as DaemonSet, one pod per node)
+# Reads pod logs from /var/log/pods on the host filesystem → ships to Loki
+# Scrapes Prometheus metrics from annotated pods + kubelet → ships to Mimir
+# Receives OTLP traces from apps → forwards to Tempo
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

@@ -1,3 +1,7 @@
+# node-exporter — host-level metrics collector (runs as DaemonSet)
+# Reads /proc and /sys on the node → exposes CPU, RAM, disk, network metrics
+# Alloy scrapes it via prometheus.io/scrape annotation → ships to Mimir
+# Required for Node Exporter Full dashboard in Grafana
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

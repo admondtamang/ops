@@ -1,3 +1,7 @@
+# Grafana �� visualization layer (dashboards, alerts)
+# Queries Mimir for metrics, Loki for logs, Tempo for traces
+# Datasources and dashboards are provisioned via Helm values (no manual UI setup needed)
+# Exposed at: grafana.admondtamang.com.np and LoadBalancer port 9995
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

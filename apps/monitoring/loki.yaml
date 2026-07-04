@@ -1,3 +1,7 @@
+# Loki — log storage and query engine
+# Receives logs pushed by Alloy → stores on node disk (filesystem mode, 10Gi PVC)
+# Queried by Grafana to display and search pod logs
+# loki-gateway (nginx) is the internal entry point: loki-gateway.monitoring.svc
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
