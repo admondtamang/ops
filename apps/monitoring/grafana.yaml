@@ -1,0 +1,89 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - chart: grafana
+      repoURL: https://grafana.github.io/helm-charts
+      targetRevision: 9.0.0
+      helm:
+        values: |
+          adminPassword: admin123
+
+          dashboardProviders:
+            dashboardproviders.yaml:
+              apiVersion: 1
+              providers:
+                - name: default
+                  folder: Kubernetes
+                  type: file
+                  options:
+                    path: /var/lib/grafana/dashboards/default
+
+          dashboards:
+            default:
+              node-exporter:
+                gnetId: 1860
+                revision: 37
+                datasource: Mimir
+              kubernetes-cluster:
+                gnetId: 15760
+                revision: 34
+                datasource: Mimir
+              kubernetes-pods:
+                gnetId: 13332
+                revision: 12
+                datasource: Mimir
+
+          datasources:
+            datasources.yaml:
+              apiVersion: 1
+              datasources:
+                - name: Mimir
+                  type: prometheus
+                  url: http://mimir-nginx.monitoring.svc/prometheus
+                  isDefault: true
+                  jsonData:
+                    httpMethod: POST
+                - name: Loki
+                  type: loki
+                  url: http://loki-gateway.monitoring.svc
+                - name: Tempo
+                  type: tempo
+                  url: http://tempo.monitoring.svc:3100
+                  jsonData:
+                    tracesToLogsV2:
+                      datasourceUid: Loki
+                    serviceMap:
+                      datasourceUid: Mimir
+
+          service:
+            type: LoadBalancer
+            port: 9995
+            targetPort: 3000
+          ingress:
+            annotations: 
+              kubernetes.io/ingress.class: traefik
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+            enabled: true
+            hosts:
+              - grafana.admondtamang.com.np
+            tls:
+              - hosts:
+                  - grafana.admondtamang.com.np
+                secretName: grafana-tls
+
+  destination:
+    namespace: monitoring
+    name: in-cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
