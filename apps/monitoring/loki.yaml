@@ -44,6 +44,7 @@ spec:
             # 30-day log retention
             limits_config:
               retention_period: 720h
+              allow_structured_metadata: false
 
             # Enable the compactor to enforce retention
             compactor:
