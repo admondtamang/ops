@@ -93,7 +93,7 @@ spec:
                 // Also scrape kubernetes system components
                 prometheus.scrape "kubelet" {
                   targets = [{
-                    __address__ = "192.168.1.64:10250",
+                    __address__ = "192.168.18.143:10250",
                   }]
                   scheme             = "https"
                   tls_config {
