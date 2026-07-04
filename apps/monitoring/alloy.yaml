@@ -90,11 +90,13 @@ spec:
                   forward_to = [prometheus.remote_write.mimir.receiver]
                 }
 
-                // Also scrape kubernetes system components
+                // Discover kubelet on every node dynamically (no hardcoded IPs)
+                discovery.kubernetes "nodes" {
+                  role = "node"
+                }
+
                 prometheus.scrape "kubelet" {
-                  targets = [{
-                    __address__ = "192.168.18.143:10250",
-                  }]
+                  targets            = discovery.kubernetes.nodes.targets
                   scheme             = "https"
                   tls_config {
                     insecure_skip_verify = true
