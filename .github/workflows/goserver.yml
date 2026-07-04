@@ -15,14 +15,7 @@ jobs:
       - name: Build and push image
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u admondtamang --password-stdin
-          docker build -t admondtamang/myapp:${{ github.sha }} exmaples/goserver/
-          docker push admondtamang/myapp:${{ github.sha }}
-
-      - name: Update manifest
-        run: |
-          git config user.email "ci@github.com"
-          git config user.name "GitHub Actions"
-          sed -i "s|image: admondtamang/myapp:.*|image: admondtamang/myapp:${{ github.sha }}|" manifests/myapp/deployment.yml
-          git add manifests/myapp/deployment.yml
-          git commit -m "chore: deploy goserver ${{ github.sha }}"
-          git push
+          # Read the tag pinned in the manifest — CI builds exactly that, no commit-back needed
+          TAG=$(grep 'image: admondtamang/myapp:' manifests/myapp/deployment.yml | awk -F: '{print $3}')
+          docker build -t admondtamang/myapp:${TAG} exmaples/goserver/
+          docker push admondtamang/myapp:${TAG}
