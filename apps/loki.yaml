@@ -27,7 +27,7 @@ spec:
             storage:
               type: filesystem
 
-            schema_config:
+            schemaConfig:
               configs:
                 - from: "2024-01-01"
                   store: tsdb
