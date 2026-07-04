@@ -22,7 +22,8 @@ spec:
     spec:
       containers:
         - name: myapp
-          image: admondtamang/myapp:v1
+          image: admondtamang/myapp:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
 ---
