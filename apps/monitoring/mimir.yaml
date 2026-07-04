@@ -87,6 +87,8 @@ spec:
                 # Classic push path: distributors write directly to ingesters via gRPC.
                 # The default disables this because Kafka handles writes in ingest-storage mode.
                 push_grpc_method_enabled: true
+                ring:
+                  replication_factor: 1
 
           # 9. Expose Mimir through the gateway's ingress (nginx reverse proxy pod).
           #    mimir-distributed does NOT have a top-level ingress block.
