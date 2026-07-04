@@ -51,7 +51,7 @@ spec:
   tls:
     - hosts:
         - myapp.admondtamang.com.np
-      secretName: nginx-deployment-tls
+      secretName: myapp-deployment-tls
   rules:
     - host: myapp.admondtamang.com.np
       http:
@@ -62,4 +62,4 @@ spec:
               service:
                 name: myapp
                 port:
-                  number: 8080
+                  number: 80
