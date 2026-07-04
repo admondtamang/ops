@@ -27,6 +27,16 @@ spec:
             storage:
               type: filesystem
 
+            schema_config:
+              configs:
+                - from: "2024-01-01"
+                  store: tsdb
+                  object_store: filesystem
+                  schema: v13
+                  index:
+                    prefix: index_
+                    period: 24h
+
             # 30-day log retention
             limits_config:
               retention_period: 720h
