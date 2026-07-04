@@ -161,6 +161,32 @@ server:
 
 ---
 
+## ArgoCD selfHeal Scope
+
+`selfHeal` on the `sourceoftruth` app does NOT cascade to child apps. Each app has its own independent `selfHeal` setting.
+
+```
+sourceoftruth  (selfHeal: false)
+  └── controls: will ArgoCD revert manual edits to Application objects in the cluster?
+
+alloy          (selfHeal: true)   ← set in apps/alloy.yaml
+loki           (selfHeal: true)   ← set in apps/loki.yaml
+grafana        (selfHeal: true)   ← set in apps/grafana.yaml
+```
+
+**What each layer controls:**
+
+| App | selfHeal protects |
+|-----|-------------------|
+| `sourceoftruth` | The Application CRD objects (e.g. if you `kubectl patch application alloy`) |
+| `alloy`, `loki`, etc. | The actual workloads (pods, configmaps, secrets those apps deploy) |
+
+**Example:**
+- `sourceoftruth selfHeal: false` — you `kubectl patch application alloy` to change a value → ArgoCD leaves it alone
+- `alloy selfHeal: true` — you `kubectl scale daemonset alloy --replicas=0` → ArgoCD restores it within 180s
+
+---
+
 ## Helm Values Gotcha
 
 Removing a key from `values.yaml` does NOT disable it — it falls back to the chart's built-in default.

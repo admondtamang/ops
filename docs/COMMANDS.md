@@ -89,6 +89,20 @@ git push
 
 > **Why disable selfHeal first?** With `selfHeal: true`, ArgoCD detects your manual `kubectl apply` as drift and reverts it within 180s. Disabling it temporarily gives you unlimited time to test before committing.
 
+### Disable selfHeal on ALL apps at once (working on multiple deployments)
+```bash
+kubectl get applications -n argocd -o name | xargs -I{} kubectl patch {} -n argocd --type merge \
+  -p '{"spec":{"syncPolicy":{"automated":{"selfHeal":false}}}}'
+```
+
+### Re-enable selfHeal on ALL apps
+```bash
+kubectl get applications -n argocd -o name | xargs -I{} kubectl patch {} -n argocd --type merge \
+  -p '{"spec":{"syncPolicy":{"automated":{"selfHeal":true}}}}'
+```
+
+> **Scenario:** You're iterating on multiple apps at once. Disable all, test freely with `kubectl apply`, re-enable when done and push everything to git.
+
 ### Log out when done
 
 ```bash
