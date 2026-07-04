@@ -1,0 +1,28 @@
+name: goserver
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "exmaples/goserver/**"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and push image
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u admondtamang --password-stdin
+          docker build -t admondtamang/myapp:${{ github.sha }} exmaples/goserver/
+          docker push admondtamang/myapp:${{ github.sha }}
+
+      - name: Update manifest
+        run: |
+          git config user.email "ci@github.com"
+          git config user.name "GitHub Actions"
+          sed -i "s|image: admondtamang/myapp:.*|image: admondtamang/myapp:${{ github.sha }}|" manifests/myapp/deployment.yml
+          git add manifests/myapp/deployment.yml
+          git commit -m "chore: deploy goserver ${{ github.sha }}"
+          git push
