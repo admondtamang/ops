@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	version := 3
+	version := 4
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "hello from k8s - ", version)
 	})
