@@ -279,6 +279,16 @@ kubectl get application <app-name> -n argocd -o jsonpath='{.status.sync.compared
 kubectl annotate application <app-name> -n argocd argocd.argoproj.io/refresh=hard --overwrite
 ```
 
+### App shows Synced but cluster still has old values (stale repo-server cache)
+ArgoCD has two caches: app cache (cleared by hard refresh) and repo-server cache (not cleared by hard refresh).
+If you pushed a change but ArgoCD keeps saying "unchanged" and applies the old manifest, the repo-server is serving stale content.
+```bash
+kubectl rollout restart deployment/argocd-repo-server -n argocd
+kubectl rollout status deployment/argocd-repo-server -n argocd --timeout=60s
+# Then force sync:
+argocd app sync <app-name> --force
+```
+
 ### Pod is in CrashLoopBackOff
 ```bash
 kubectl describe pod <pod-name> -n <namespace>   # check Events section
