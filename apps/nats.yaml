@@ -14,12 +14,12 @@ spec:
       helm:
         values: |
           service:
-            type: LoadBalancer
-            port: 4222
-            targetPort: 4222
+            merge:
+              spec:
+                type: LoadBalancer
           config:
             monitor:
-              enabled: true
+              enabled: false
             jetstream:
               enabled: true
               fileStore:
