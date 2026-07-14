@@ -25,7 +25,7 @@ spec:
                 hosts:
                   - kuma.admondtamang.com.np
             hosts:
-              - host: kuma.admondtamang.com.np
+              - host: kuma.local
                 paths:
                   - path: /
                     pathType: ImplementationSpecific
