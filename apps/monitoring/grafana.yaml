@@ -76,7 +76,7 @@ spec:
               cert-manager.io/cluster-issuer: letsencrypt-prod
             enabled: true
             hosts:
-              - grafana.admondtamang.com.np
+              - grafana.local
             tls:
               - hosts:
                   - grafana.admondtamang.com.np
