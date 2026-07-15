@@ -3,16 +3,10 @@ kind: Ingress
 metadata:
   name: argocd-ingress
   namespace: argocd
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
-  tls:
-    - hosts:
-        - argo.admondtamang.com.np
-      secretName: argo-tls
   rules:
-    - host: local.argocd
+    - host: argocd.local
       http:
         paths:
           - path: /
